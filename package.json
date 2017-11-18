@@ -1,0 +1,14 @@
+{
+  "name": "react-data-guard",
+  "version": "0.0.1",
+  "description": "type-safe loader for data",
+  "main": "index.js",
+  "author": "ar.lipatov93@yandex.ru",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/react": "^16.0.25",
+    "react": "^16.1.1",
+    "typescript": "^2.6.1"
+  },
+  "dependencies": {}
+}

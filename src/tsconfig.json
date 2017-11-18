@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "outDir": "../public/js",
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "moduleResolution": "node",
+    "strict": true,
+    "module": "es6",
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "target": "es5",
+    "lib": ["dom", "es6", "es2016.array.include"],
+    "jsx": "react",
+    "sourceMap": true,
+    "skipLibCheck": true
+  }
+}
