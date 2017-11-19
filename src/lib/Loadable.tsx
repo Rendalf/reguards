@@ -1,14 +1,23 @@
 import * as React from 'react'
 import { omit } from 'lodash'
 import { Guard } from './guard'
+import { connect } from 'react-redux'
 
-type LoadableProps<TOwnProps extends {}> = TOwnProps & {
-  dispatch: () => void
+type LoadableStateProps = {
   state: any
+}
+
+type LoadableDispatchProps = {
+  dispatch: <TAction>(action: TAction) => void
+}
+
+type LoadableOwnProps<TOwnProps extends {}> = TOwnProps & {
   preloader: React.ComponentType
   component: React.ComponentType<TOwnProps>
   guard: Guard<TOwnProps>
 }
+
+type LoadableProps<TOwnProps extends {}> = LoadableStateProps & LoadableDispatchProps & LoadableOwnProps<TOwnProps>
 
 type LoadablePropKey = keyof LoadableProps<{}>
 const OMITTED_PROP_KEYS: Record<LoadablePropKey, true> = {
@@ -18,7 +27,7 @@ const OMITTED_PROP_KEYS: Record<LoadablePropKey, true> = {
   component: true,
   guard: true,
 }
-function getOwnProps <TOwnProps extends {}>(props: LoadableProps<TOwnProps>): TOwnProps {
+function getOwnProps <TOwnProps extends {}>(props: Readonly<LoadableProps<TOwnProps>>): TOwnProps {
   return omit(props, ...Object.keys(OMITTED_PROP_KEYS)) as TOwnProps
 }
 
@@ -28,27 +37,38 @@ type LoadableState<TOwnProps> = {
   ownProps: TOwnProps
 }
 
-class Loadable<TOwnProps extends {}>
+class LoadableComponent<TOwnProps extends {}>
   extends React.Component<LoadableProps<TOwnProps>, LoadableState<TOwnProps>>
 {
   constructor (props: LoadableProps<TOwnProps>, context: any) {
     super(props, context)
 
-    const { state, guard } = props
-    const ownProps = getOwnProps(props)
-    this.state = {
-      isLoaded: guard.isLoaded(state, ownProps),
-      isLoading: guard.isLoading(state, ownProps),
-      ownProps,
-    }
+    const readonlyProps = Object.freeze(props)
+    this.state = this.getNextState(readonlyProps)
   }
 
   componentDidMount () {
     this.checkGuard()
   }
 
+  componentWillReceiveProps (nextProps: Readonly<LoadableProps<TOwnProps>>) {
+    this.setState(
+      this.getNextState(nextProps)
+    )
+  }
+
   componentDidUpdate () {
     this.checkGuard()
+  }
+
+  private getNextState (nextProps: Readonly<LoadableProps<TOwnProps>>): LoadableState<TOwnProps> {
+    const { state, guard } = nextProps
+    const ownProps = getOwnProps(nextProps)
+    return {
+      isLoaded: guard.isLoaded(state, ownProps),
+      isLoading: guard.isLoading(state, ownProps),
+      ownProps,
+    }
   }
 
   private checkGuard () {
@@ -77,4 +97,10 @@ class Loadable<TOwnProps extends {}>
   }
 }
 
+const mapStateToProps = (state: any) => ({
+  state,
+})
+
+// TODO make it HOC
+const Loadable = connect<LoadableStateProps, {}, LoadableOwnProps<{}>>(mapStateToProps)(LoadableComponent)
 export default Loadable

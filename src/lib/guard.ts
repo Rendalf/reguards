@@ -1,7 +1,8 @@
 type State = any
-type Dispatch = () => void
+type Dispatch = <TAction>(action: TAction) => void
 
-export type Guard<TOwnProps extends {}> = {
+// TODO create types factory considering State & Dispatch
+export type Guard<TOwnProps extends {} = {}> = {
   isLoaded: (state: State, ownProps: TOwnProps) => boolean
   isLoading: (state: State, ownProps: TOwnProps) => boolean
   load: (dispatch: Dispatch, state: State, ownProps: TOwnProps) => void
