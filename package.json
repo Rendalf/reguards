@@ -1,5 +1,5 @@
 {
-  "name": "react-data-guard",
+  "name": "reguards",
   "version": "0.0.1",
   "description": "type-safe loader for data",
   "main": "index.js",
